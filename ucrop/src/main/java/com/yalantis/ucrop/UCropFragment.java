@@ -255,6 +255,9 @@ public class UCropFragment extends Fragment {
             mGestureCropImageView.setTargetAspectRatio(CropImageView.SOURCE_IMAGE_ASPECT_RATIO);
         }
 
+        boolean useFixedAspectRatio = bundle.getBoolean(UCrop.EXTRA_USE_FIXED_ASPECT_RATIO, false);
+        mGestureCropImageView.useFixedAspectRatio(useFixedAspectRatio);
+
         // Result bitmap max size options
         int maxSizeX = bundle.getInt(UCrop.EXTRA_MAX_SIZE_X, 0);
         int maxSizeY = bundle.getInt(UCrop.EXTRA_MAX_SIZE_Y, 0);

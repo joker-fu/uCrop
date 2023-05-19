@@ -8,20 +8,19 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 
-import com.yalantis.ucrop.model.AspectRatio;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Locale;
-
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.FloatRange;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+
+import com.yalantis.ucrop.model.AspectRatio;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Locale;
 
 /**
  * Created by Oleksii Shliama (https://github.com/shliama).
@@ -47,6 +46,7 @@ public class UCrop {
 
     public static final String EXTRA_ASPECT_RATIO_X = EXTRA_PREFIX + ".AspectRatioX";
     public static final String EXTRA_ASPECT_RATIO_Y = EXTRA_PREFIX + ".AspectRatioY";
+    public static final String EXTRA_USE_FIXED_ASPECT_RATIO = EXTRA_PREFIX + ".UseFixedAspectRatio";
 
     public static final String EXTRA_MAX_SIZE_X = EXTRA_PREFIX + ".MaxSizeX";
     public static final String EXTRA_MAX_SIZE_Y = EXTRA_PREFIX + ".MaxSizeY";
@@ -91,6 +91,14 @@ public class UCrop {
     public UCrop useSourceImageAspectRatio() {
         mCropOptionsBundle.putFloat(EXTRA_ASPECT_RATIO_X, 0);
         mCropOptionsBundle.putFloat(EXTRA_ASPECT_RATIO_Y, 0);
+        return this;
+    }
+
+    /**
+     * Use fixes the aspect ratio.
+     */
+    public UCrop useFixedAspectRatio() {
+        mCropOptionsBundle.putBoolean(EXTRA_USE_FIXED_ASPECT_RATIO, true);
         return this;
     }
 
@@ -522,6 +530,14 @@ public class UCrop {
         public void useSourceImageAspectRatio() {
             mOptionBundle.putFloat(EXTRA_ASPECT_RATIO_X, 0);
             mOptionBundle.putFloat(EXTRA_ASPECT_RATIO_Y, 0);
+        }
+
+
+        /**
+         * Use fixes the aspect ratio.
+         */
+        public void useFixedAspectRatio() {
+            mOptionBundle.putBoolean(EXTRA_USE_FIXED_ASPECT_RATIO, true);
         }
 
         /**

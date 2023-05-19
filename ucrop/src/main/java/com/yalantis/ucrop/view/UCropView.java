@@ -43,6 +43,7 @@ public class UCropView extends FrameLayout {
             @Override
             public void onCropAspectRatioChanged(float cropRatio) {
                 mViewOverlay.setTargetAspectRatio(cropRatio);
+                mViewOverlay.setFixedAspectRatio(mGestureCropImageView.getFixedAspectRatio());
             }
         });
         mViewOverlay.setOverlayViewChangeListener(new OverlayViewChangeListener() {

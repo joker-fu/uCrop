@@ -9,6 +9,10 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.util.AttributeSet;
 
+import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.yalantis.ucrop.R;
 import com.yalantis.ucrop.callback.BitmapCropCallback;
 import com.yalantis.ucrop.callback.CropBoundsChangeListener;
@@ -20,10 +24,6 @@ import com.yalantis.ucrop.util.RectUtils;
 
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
-
-import androidx.annotation.IntRange;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 /**
  * Created by Oleksii Shliama (https://github.com/shliama).
@@ -53,6 +53,8 @@ public class CropImageView extends TransformImageView {
     private float mMaxScale, mMinScale;
     private int mMaxResultImageSizeX = 0, mMaxResultImageSizeY = 0;
     private long mImageToWrapCropBoundsAnimDuration = DEFAULT_IMAGE_TO_CROP_BOUNDS_ANIM_DURATION;
+    private boolean mFixedAspectRatio;
+    private boolean mUseFixedAspectRatio;
 
     public CropImageView(Context context) {
         this(context, null);
@@ -135,6 +137,7 @@ public class CropImageView extends TransformImageView {
      */
     public void setTargetAspectRatio(float targetAspectRatio) {
         final Drawable drawable = getDrawable();
+        setFixedAspectRatio(true);
         if (drawable == null) {
             mTargetAspectRatio = targetAspectRatio;
             return;
@@ -149,6 +152,25 @@ public class CropImageView extends TransformImageView {
         if (mCropBoundsChangeListener != null) {
             mCropBoundsChangeListener.onCropAspectRatioChanged(mTargetAspectRatio);
         }
+    }
+
+    /**
+     * Use fixes the aspect ratio. The [getFixedAspectRatio] always will return false
+     */
+    public void useFixedAspectRatio(boolean useFixedAspectRatio) {
+        mUseFixedAspectRatio = useFixedAspectRatio;
+    }
+
+    /**
+     * Sets whether the aspect ratio is fixed or not; true fixes the aspect ratio, while false allows
+     * it to be changed.
+     */
+    public void setFixedAspectRatio(boolean fixedAspectRatio) {
+        mFixedAspectRatio = fixedAspectRatio;
+    }
+
+    public boolean getFixedAspectRatio() {
+        return mUseFixedAspectRatio && mFixedAspectRatio;
     }
 
     @Nullable
@@ -240,6 +262,7 @@ public class CropImageView extends TransformImageView {
      * @param px         - scale center X
      * @param py         - scale center Y
      */
+    @Override
     public void postScale(float deltaScale, float px, float py) {
         if (deltaScale > 1 && getCurrentScale() * deltaScale <= getMaxScale()) {
             super.postScale(deltaScale, px, py);

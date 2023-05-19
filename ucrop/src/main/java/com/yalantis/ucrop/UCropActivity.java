@@ -274,6 +274,9 @@ public class UCropActivity extends AppCompatActivity {
             mGestureCropImageView.setTargetAspectRatio(CropImageView.SOURCE_IMAGE_ASPECT_RATIO);
         }
 
+        boolean useFixedAspectRatio = intent.getBooleanExtra(UCrop.EXTRA_USE_FIXED_ASPECT_RATIO, false);
+        mGestureCropImageView.useFixedAspectRatio(useFixedAspectRatio);
+
         // Result bitmap max size options
         int maxSizeX = intent.getIntExtra(UCrop.EXTRA_MAX_SIZE_X, 0);
         int maxSizeY = intent.getIntExtra(UCrop.EXTRA_MAX_SIZE_Y, 0);
