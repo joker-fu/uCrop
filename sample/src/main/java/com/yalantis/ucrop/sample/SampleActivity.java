@@ -32,15 +32,6 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.yalantis.ucrop.UCrop;
-import com.yalantis.ucrop.UCropActivity;
-import com.yalantis.ucrop.UCropFragment;
-import com.yalantis.ucrop.UCropFragmentCallback;
-
-import java.io.File;
-import java.util.Locale;
-import java.util.Random;
-
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
@@ -50,6 +41,15 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+
+import com.yalantis.ucrop.UCrop;
+import com.yalantis.ucrop.UCropActivity;
+import com.yalantis.ucrop.UCropFragment;
+import com.yalantis.ucrop.UCropFragmentCallback;
+
+import java.io.File;
+import java.util.Locale;
+import java.util.Random;
 
 /**
  * Created by Oleksii Shliama (https://github.com/shliama).
@@ -92,6 +92,7 @@ public class SampleActivity extends BaseActivity implements UCropFragmentCallbac
     private CheckBox mCheckBoxUseDocumentProvider;
     private CheckBox mCheckBoxUseFileProvider;
     private Uri destinationUri;
+    private CheckBox mFixedAspectRatio;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -187,8 +188,8 @@ public class SampleActivity extends BaseActivity implements UCropFragmentCallbac
         public void onClick(View v) {
             if (mRadioGroupChooseDestination.getCheckedRadioButtonId() == R.id.radio_choose_destination && destinationUri == null) {
                 Toast.makeText(SampleActivity.this,
-                               "Please, select a destination file or set Tmp Files destination option",
-                               Toast.LENGTH_LONG).show();
+                        "Please, select a destination file or set Tmp Files destination option",
+                        Toast.LENGTH_LONG).show();
             } else {
                 onValidatedClick(v);
             }
@@ -214,7 +215,7 @@ public class SampleActivity extends BaseActivity implements UCropFragmentCallbac
                     break;
             }
 
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 
                 if (mCheckBoxUseDocumentProvider.isChecked()) {
 
@@ -228,14 +229,14 @@ public class SampleActivity extends BaseActivity implements UCropFragmentCallbac
                         startActivityForResult(createDocumentIntent, DESTINATION_IMAGE_FILE_REQUEST_CODE);
                     } else {
                         Toast.makeText(SampleActivity.this,
-                                       R.string.no_file_chooser_error,
-                                       Toast.LENGTH_LONG).show();
+                                R.string.no_file_chooser_error,
+                                Toast.LENGTH_LONG).show();
                     }
-                } else if(ActivityCompat.checkSelfPermission(SampleActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                } else if (ActivityCompat.checkSelfPermission(SampleActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                         != PackageManager.PERMISSION_GRANTED) {
                     requestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                      getString(R.string.permission_write_storage_rationale),
-                                      REQUEST_STORAGE_WRITE_ACCESS_PERMISSION);
+                            getString(R.string.permission_write_storage_rationale),
+                            REQUEST_STORAGE_WRITE_ACCESS_PERMISSION);
                 } else {
                     showChooseFileDestinationAlertDialog();
                 }
@@ -243,8 +244,8 @@ public class SampleActivity extends BaseActivity implements UCropFragmentCallbac
                     && ActivityCompat.checkSelfPermission(SampleActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     != PackageManager.PERMISSION_GRANTED) {
                 requestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                  getString(R.string.permission_write_storage_rationale),
-                                  REQUEST_STORAGE_WRITE_ACCESS_PERMISSION);
+                        getString(R.string.permission_write_storage_rationale),
+                        REQUEST_STORAGE_WRITE_ACCESS_PERMISSION);
             } else {
                 showChooseFileDestinationAlertDialog();
             }
@@ -314,6 +315,7 @@ public class SampleActivity extends BaseActivity implements UCropFragmentCallbac
         });
         mRadioGroupChooseDestination.check(R.id.radio_tmp_destination);
         settingsView = findViewById(R.id.settings);
+        mFixedAspectRatio = findViewById(R.id.checkbox_fixed_aspect_ratio);
         mRadioGroupAspectRatio = findViewById(R.id.radio_group_aspect_ratio);
         mRadioGroupCompressionSettings = findViewById(R.id.radio_group_compression_settings);
         mCheckBoxMaxSize = findViewById(R.id.checkbox_max_size);
@@ -396,8 +398,8 @@ public class SampleActivity extends BaseActivity implements UCropFragmentCallbac
                 File file = new File(directory, fileName);
                 if (mCheckBoxUseFileProvider.isChecked()) {
                     destinationUri = FileProvider.getUriForFile(SampleActivity.this,
-                                                                getString(R.string.file_provider_authorities),
-                                                                file);
+                            getString(R.string.file_provider_authorities),
+                            file);
                 } else {
                     destinationUri = Uri.fromFile(file);
                 }
@@ -417,7 +419,7 @@ public class SampleActivity extends BaseActivity implements UCropFragmentCallbac
 
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
         EditText editTextFilename = dialog.findViewById(R.id.edit_text_file_name);
-        if(editTextFilename != null) {
+        if (editTextFilename != null) {
             editTextFilename.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -566,6 +568,9 @@ public class SampleActivity extends BaseActivity implements UCropFragmentCallbac
 
         options.setHideBottomControls(mCheckBoxHideBottomControls.isChecked());
         options.setFreeStyleCropEnabled(mCheckBoxFreeStyleCrop.isChecked());
+        if (mFixedAspectRatio.isChecked()) {
+            options.useFixedAspectRatio();
+        }
 
         /*
         If you want to configure how gestures work for all UCropActivity tabs

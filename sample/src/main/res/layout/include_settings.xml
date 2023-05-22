@@ -224,6 +224,26 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:text="@string/label_fixed_aspect_ratio"
+                android:textAppearance="?android:textAppearanceSmall" />
+
+            <CheckBox
+                android:id="@+id/checkbox_fixed_aspect_ratio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/label_fixed_aspect_ratio"
+                android:textAppearance="?android:textAppearanceMedium" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_margin="5dp"
+                android:background="@color/colorAccent" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:text="@string/label_max_cropped_image_size"
                 android:textAppearance="?android:textAppearanceSmall" />
 

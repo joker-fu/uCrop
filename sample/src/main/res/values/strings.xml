@@ -8,6 +8,7 @@
     <string name="label_image_source">Image source</string>
     <string name="label_square">Square</string>
     <string name="label_max_cropped_image_size">Max cropped image size</string>
+    <string name="label_fixed_aspect_ratio">Fixed Aspect ratio</string>
     <string name="label_compression_settings">Compression settings</string>
     <string name="label_ui">UI</string>
     <string name="label_width">Width</string>
