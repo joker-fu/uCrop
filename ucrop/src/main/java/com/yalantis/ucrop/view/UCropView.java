@@ -4,14 +4,17 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.widget.FrameLayout;
+
+import androidx.annotation.NonNull;
 
 import com.yalantis.ucrop.R;
 import com.yalantis.ucrop.callback.CropBoundsChangeListener;
 import com.yalantis.ucrop.callback.OverlayViewChangeListener;
-
-import androidx.annotation.NonNull;
 
 public class UCropView extends FrameLayout {
 
@@ -31,9 +34,9 @@ public class UCropView extends FrameLayout {
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ucrop_UCropView);
         mViewOverlay.processStyledAttributes(a);
+        mViewOverlay.setupGestureListeners(new GestureListener(), new ScaleListener());
         mGestureCropImageView.processStyledAttributes(a);
         a.recycle();
-
 
         setListenersToViews();
     }
@@ -79,5 +82,30 @@ public class UCropView extends FrameLayout {
         setListenersToViews();
         mGestureCropImageView.setCropRect(getOverlayView().getCropViewRect());
         addView(mGestureCropImageView, 0);
+    }
+
+    private class GestureListener extends GestureDetector.SimpleOnGestureListener {
+
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+            mGestureCropImageView.zoomImageToPosition(mGestureCropImageView.getDoubleTapTargetScale(), e.getX(), e.getY(), mGestureCropImageView.getDoubleTapZoomDuration());
+            return super.onDoubleTap(e);
+        }
+
+    }
+
+    private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+
+        @Override
+        public boolean onScale(ScaleGestureDetector detector) {
+            mGestureCropImageView.postScale(detector.getScaleFactor(), mViewOverlay.getMidPntX(), mViewOverlay.getMidPntY());
+            return true;
+        }
+
+        @Override
+        public boolean onScaleBegin(ScaleGestureDetector detector) {
+            mViewOverlay.setGestureViewInScale(true);
+            return super.onScaleBegin(detector);
+        }
     }
 }

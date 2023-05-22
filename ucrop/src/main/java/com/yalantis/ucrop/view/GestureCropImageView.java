@@ -114,10 +114,13 @@ public class GestureCropImageView extends CropImageView {
      * User is able to zoom the image from min scale value
      * to the max scale value with {@link #mDoubleTapScaleSteps} double taps.
      */
-    protected float getDoubleTapTargetScale() {
+    public float getDoubleTapTargetScale() {
         return getCurrentScale() * (float) Math.pow(getMaxScale() / getMinScale(), 1.0f / mDoubleTapScaleSteps);
     }
 
+    public int getDoubleTapZoomDuration(){
+        return DOUBLE_TAP_ZOOM_DURATION;
+    }
     private void setupGestureListeners() {
         mGestureDetector = new GestureDetector(getContext(), new GestureListener(), null, true);
         mScaleDetector = new ScaleGestureDetector(getContext(), new ScaleListener());

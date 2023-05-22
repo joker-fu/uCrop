@@ -9,7 +9,9 @@ import android.graphics.RectF;
 import android.graphics.Region;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
@@ -73,6 +75,11 @@ public class OverlayView extends View {
 
     private boolean mShouldSetupCropBounds;
     private boolean mFixedAspectRatio;
+
+    private ScaleGestureDetector mScaleDetector;
+    private GestureDetector mGestureDetector;
+
+    private float mMidPntX, mMidPntY;
 
     {
         mTouchPointThreshold = getResources().getDimensionPixelSize(R.dimen.ucrop_default_crop_rect_corner_touch_threshold);
@@ -276,6 +283,15 @@ public class OverlayView extends View {
         }
     }
 
+    public void setupGestureListeners(GestureDetector.OnGestureListener gestureListener, ScaleGestureDetector.OnScaleGestureListener scaleListener) {
+        if (gestureListener != null) {
+            mGestureDetector = new GestureDetector(getContext(), gestureListener, null, true);
+        }
+        if (scaleListener != null) {
+            mScaleDetector = new ScaleGestureDetector(getContext(), scaleListener);
+        }
+    }
+
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
@@ -304,10 +320,25 @@ public class OverlayView extends View {
         drawCropGrid(canvas);
     }
 
+    public float getMidPntX() {
+        return mMidPntX;
+    }
+
+    public float getMidPntY() {
+        return mMidPntY;
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (mCropViewRect.isEmpty() || (mFreestyleCropMode == FREESTYLE_CROP_MODE_DISABLE && !mFixedAspectRatio)) {
             return false;
+        }
+
+        mGestureDetector.onTouchEvent(event);
+        mScaleDetector.onTouchEvent(event);
+        if (event.getPointerCount() > 1) {
+            mMidPntX = (event.getX(0) + event.getX(1)) / 2;
+            mMidPntY = (event.getY(0) + event.getY(1)) / 2;
         }
 
         float x = event.getX();
@@ -326,7 +357,7 @@ public class OverlayView extends View {
             return shouldHandle;
         }
 
-        if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_MOVE) {
+        if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_MOVE && !mGestureViewInScale) {
             if (event.getPointerCount() == 1 && mCurrentTouchCornerIndex != -1) {
 
                 x = Math.min(Math.max(x, getPaddingLeft()), getWidth() - getPaddingRight());
@@ -345,6 +376,7 @@ public class OverlayView extends View {
             mPreviousTouchX = -1;
             mPreviousTouchY = -1;
             mCurrentTouchCornerIndex = -1;
+            mGestureViewInScale = false;
 
             if (mCallback != null) {
                 mCallback.onCropRectUpdated(mCropViewRect);
@@ -619,6 +651,11 @@ public class OverlayView extends View {
         mCropGridColumnCount = a.getInt(R.styleable.ucrop_UCropView_ucrop_grid_column_count, DEFAULT_CROP_GRID_COLUMN_COUNT);
     }
 
+    private boolean mGestureViewInScale;
+
+    public void setGestureViewInScale(boolean scale) {
+        mGestureViewInScale = scale;
+    }
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({FREESTYLE_CROP_MODE_DISABLE, FREESTYLE_CROP_MODE_ENABLE, FREESTYLE_CROP_MODE_ENABLE_WITH_PASS_THROUGH})
